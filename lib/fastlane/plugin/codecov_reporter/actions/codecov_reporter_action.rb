@@ -7,13 +7,21 @@ module Fastlane
 
         params[:token] ||= false
 
+        codecov_args = ["-K"]
+
         if params[:token] != false
           UI.message "It looks like I'm working with a private repository"
-          sh "bash #{ENV['PWD']}/codecov_reporter.sh -K -t #{params[:token]}"
+          codecov_args << "-t" << params[:token]
         else
           UI.message "It looks like I'm working with a public repository"
-          sh "bash #{ENV['PWD']}/codecov_reporter.sh -K "
         end
+
+        if params[:derived_data_path]
+          UI.message "Setting Derived Data directory to #{params[:derived_data_path]}"
+          codecov_args << "-D" << params[:derived_data_path]
+        end
+
+        sh "bash #{ENV['PWD']}/codecov_reporter.sh #{codecov_args.join(" ")}"
 
         UI.message "Removing the bash script I got from Codecov.io"
         sh "rm #{ENV['PWD']}/codecov_reporter.sh"
@@ -41,7 +49,12 @@ module Fastlane
                                        env_name: "CODECOV_TOKEN",
                                        description: "Codecov.io private repo token",
                                        is_string: true,
-                                       default_value: false)
+                                       default_value: false),
+          FastlaneCore::ConfigItem.new(key: :derived_data_path,
+                                       env_name: "DERIVED_DATA_PATH",
+                                       description: "Derived Data Path for Coverage.profdata and gcov processing",
+                                       is_string: true,
+                                       optional: true)
         ]
       end
 
