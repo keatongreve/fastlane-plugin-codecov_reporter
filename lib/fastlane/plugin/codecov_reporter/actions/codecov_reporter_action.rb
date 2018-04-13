@@ -21,7 +21,7 @@ module Fastlane
           codecov_args << "-D" << params[:derived_data_path]
         end
 
-        sh "bash #{ENV['PWD']}/codecov_reporter.sh #{codecov_args.join(" ")}"
+        sh "bash #{ENV['PWD']}/codecov_reporter.sh #{codecov_args.join(' ')}"
 
         UI.message "Removing the bash script I got from Codecov.io"
         sh "rm #{ENV['PWD']}/codecov_reporter.sh"
